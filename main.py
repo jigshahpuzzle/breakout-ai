@@ -101,14 +101,12 @@ class Ball(object):
 				self.v_y *= -1
 		# Handle Brick Collision
 		updated_bricks = []
+		brick_height = self.game_height / 25
 		for brick in bricks:
 			curr = brick.brick
+			print curr.top, curr.bottom
 			if self.xpos <= curr.right and self.xpos >= curr.left:
-				# Top Collision
-				# if self.v_y > 0 and self.ypos >= curr.bottom:
-				# 	self.v_y *= -1
-				# Bottom Collision
-				if self.v_y < 0 and self.ypos <= curr.top:
+				if self.ypos >= curr.top and self.ypos <= curr.bottom:
 					self.v_y *= -1
 				else:
 					updated_bricks.append(brick)
