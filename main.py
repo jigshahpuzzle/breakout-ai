@@ -20,28 +20,73 @@ class PongGameEnv(object):
 		self.display.fill(self.colors.maroon)
 
 	def run_game(self):
+		# Initialize Basic State
 		pygame.init()
 		self.clock = pygame.time.Clock()
+		# Initialize Objects
 		self.display = pygame.display.set_mode((self.width, self.height))
 		paddle = Paddle(self.width, self.height)
-		while True:
+		ball = Ball(self.width, self.height)
+		# Draw Objects
+		self.draw_bg()
+		paddle.draw_paddle(self.display)
+		ball.draw_ball(self.display)
+		# Update Objects Every Tick
+		while ball.alive:
+			# Handle events
 			for event in pygame.event.get():
 				if event.type == QUIT:
 					pygame.quit()
 					sys.exit()
+			# Handle Object Movements
 			keys=pygame.key.get_pressed()
 			if keys[K_LEFT]:
 				paddle.move_left()
 			if keys[K_RIGHT]:
 				paddle.move_right()
+			ball.move_ball(paddle)
+			# Redraw
 			self.draw_bg()
 			paddle.draw_paddle(self.display)
+			ball.draw_ball(self.display)
+			# Update Display
 			pygame.display.update()
 			self.clock.tick(self.fps)
+
+class Ball(object):
+
+	def __init__(self, game_width, game_height):
+		self.xpos = game_width / 2
+		self.ypos = game_height / 2
+		self.game_width = game_width
+		self.game_height = game_height
+		self.colors = Colors()
+		self.v_x = 1.3
+		self.v_y = 1.3
+		self.alive = True
+
+	def draw_ball(self, display):
+		ball = pygame.Rect(self.xpos, self.ypos, 5, 5)
+		pygame.draw.rect(display, self.colors.white, ball)
+
+	def move_ball(self, paddle):
+		self.xpos = self.xpos + self.v_x
+		self.ypos = self.ypos + self.v_y
+		if self.xpos >= self.game_width or self.xpos <= 0:
+			self.v_x *= -1
+		if self.ypos <= 0:
+			self.v_y *= -1
+		if self.ypos >= self.game_height:
+			self.alive = False
+		pad = paddle.paddle
+		if self.ypos >= pad.top - 2:
+			if self.xpos >= pad.left and self.xpos <= pad.right:
+				self.v_y *= -1
 
 class Paddle(object):
 
 	def __init__(self, game_width, game_height):
+		self.game_width = game_width
 		self.xpos = game_width / 2
 		self.ypos = game_height - 30
 		self.width = game_width / 8
@@ -50,26 +95,37 @@ class Paddle(object):
 
 	def draw_paddle(self, display):
 		paddle = pygame.Rect(self.xpos, self.ypos, self.width, self.length)
-		pygame.draw.rect(display, self.colors.black, paddle)
-		pass
+		pygame.draw.rect(display, self.colors.white, paddle)
+		self.paddle = paddle
 
 	def move_left(self):
-		self.xpos += -2
+		if self.xpos > 5:
+			self.xpos += -2
 
 	def move_right(self):
-		self.xpos += 2
+		if self.xpos < self.game_width - 5 - self.width:
+			self.xpos += 2
 
 class Brick(object):
 
-	def __init__(self):
-		pass
+	def __init__(self, game_width, game_height, xpos, ypos):
+		self.width = game_width / 20
+		self.height = game_width / 50
+		self.colors = Colors()
+		self.xpos = xpos
+		self.ypos = ypos
+
+	def draw_brick(display):
+		brick = pygame.Rect(self.xpos, self.ypos, self.width, self.height)
+		pygame.draw.rect(display, self.colors.blue, brick)
 
 class Colors(object):
 
 	def __init__(self):
-		self.white = (0, 0, 0)
-		self.black = (255, 255, 255)
+		self.black = (0, 0, 0)
+		self.white = (255, 255, 255)
 		self.maroon = (150, 0, 0)
+		self.blue = (85, 155, 215)
 
 
 if __name__=='__main__':
