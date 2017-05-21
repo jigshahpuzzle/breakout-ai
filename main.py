@@ -55,7 +55,7 @@ class PongGameEnv(object):
 				paddle.move_left()
 			if keys[K_RIGHT]:
 				paddle.move_right()
-			ball.move_ball(paddle)
+			bricks = ball.move_ball(paddle, bricks)
 			# Redraw
 			self.draw_bg()
 			paddle.draw_paddle(self.display)
@@ -82,19 +82,43 @@ class Ball(object):
 		ball = pygame.Rect(self.xpos, self.ypos, 5, 5)
 		pygame.draw.rect(display, self.colors.white, ball)
 
-	def move_ball(self, paddle):
+	def move_ball(self, paddle, bricks):
 		self.xpos = self.xpos + self.v_x
 		self.ypos = self.ypos + self.v_y
+		# Handle Edge Collisions
 		if self.xpos >= self.game_width or self.xpos <= 0:
 			self.v_x *= -1
+		# Handle Top Collision
 		if self.ypos <= 0:
 			self.v_y *= -1
+		# Handle Bottom Collision
 		if self.ypos >= self.game_height:
 			self.alive = False
+		# Handle Paddle Collision
 		pad = paddle.paddle
 		if self.ypos >= pad.top - 2:
 			if self.xpos >= pad.left and self.xpos <= pad.right:
 				self.v_y *= -1
+		# Handle Brick Collision
+		updated_bricks = []
+		for brick in bricks:
+			curr = brick.brick
+			if self.xpos <= curr.right and self.xpos >= curr.left:
+				# Top Collision
+				# if self.v_y > 0 and self.ypos >= curr.bottom:
+				# 	self.v_y *= -1
+				# Bottom Collision
+				if self.v_y < 0 and self.ypos <= curr.top:
+					self.v_y *= -1
+				else:
+					updated_bricks.append(brick)
+			# Right Collision
+			# Left Collision
+			# No Collision
+			else:
+				updated_bricks.append(brick)
+		return updated_bricks
+
 
 class Paddle(object):
 
@@ -134,6 +158,7 @@ class Brick(object):
 						self.width - 1, self.height - 1)
 		pygame.draw.rect(display, self.colors.blue, brick)
 		pygame.draw.rect(display, self.colors.black, brick_fill)
+		self.brick = brick
 
 class Colors(object):
 
