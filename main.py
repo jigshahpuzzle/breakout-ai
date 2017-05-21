@@ -27,10 +27,21 @@ class PongGameEnv(object):
 		self.display = pygame.display.set_mode((self.width, self.height))
 		paddle = Paddle(self.width, self.height)
 		ball = Ball(self.width, self.height)
+		bricks = []
+		brick_width = self.width / 10
+		brick_height = self.height / 25
+		for x in range(20):
+			for y in range(5):
+				brick_x = x * (self.width / 10)
+				brick_y = y * (self.height / 25) + 20
+				brick = Brick(self.width, self.height, brick_x, brick_y)
+				bricks.append(brick)
 		# Draw Objects
 		self.draw_bg()
 		paddle.draw_paddle(self.display)
 		ball.draw_ball(self.display)
+		for brick in bricks:
+			brick.draw_brick(self.display)
 		# Update Objects Every Tick
 		while ball.alive:
 			# Handle events
@@ -49,6 +60,8 @@ class PongGameEnv(object):
 			self.draw_bg()
 			paddle.draw_paddle(self.display)
 			ball.draw_ball(self.display)
+			for brick in bricks:
+				brick.draw_brick(self.display)
 			# Update Display
 			pygame.display.update()
 			self.clock.tick(self.fps)
@@ -61,8 +74,8 @@ class Ball(object):
 		self.game_width = game_width
 		self.game_height = game_height
 		self.colors = Colors()
-		self.v_x = 1.3
-		self.v_y = 1.3
+		self.v_x = 1
+		self.v_y = 2
 		self.alive = True
 
 	def draw_ball(self, display):
@@ -109,15 +122,18 @@ class Paddle(object):
 class Brick(object):
 
 	def __init__(self, game_width, game_height, xpos, ypos):
-		self.width = game_width / 20
-		self.height = game_width / 50
+		self.width = game_width / 10
+		self.height = game_height / 25
 		self.colors = Colors()
 		self.xpos = xpos
 		self.ypos = ypos
 
-	def draw_brick(display):
+	def draw_brick(self, display):
 		brick = pygame.Rect(self.xpos, self.ypos, self.width, self.height)
+		brick_fill = pygame.Rect(self.xpos + 1, self.ypos + 1,
+						self.width - 1, self.height - 1)
 		pygame.draw.rect(display, self.colors.blue, brick)
+		pygame.draw.rect(display, self.colors.black, brick_fill)
 
 class Colors(object):
 
