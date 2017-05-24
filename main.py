@@ -1,12 +1,13 @@
 import pygame, sys
 from pygame.locals import *
+from ai import AIPlayer
 
 def executable():
 	width = 400
 	height = 400
 	fps = 60
 	env = PongGameEnv(width, height, fps)
-	env.run_game()
+	env.run_game(1)
 
 class PongGameEnv(object):
 
@@ -19,7 +20,8 @@ class PongGameEnv(object):
 	def draw_bg(self):
 		self.display.fill(self.colors.maroon)
 
-	def run_game(self):
+	# game_mode 1 = ai, game_mode 2 = human
+	def run_game(self, game_mode):
 		# Initialize Basic State
 		pygame.init()
 		self.clock = pygame.time.Clock()
@@ -36,6 +38,7 @@ class PongGameEnv(object):
 				brick_y = y * (self.height / 25) + 20
 				brick = Brick(self.width, self.height, brick_x, brick_y)
 				bricks.append(brick)
+		ai_player = AIPlayer()
 		# Draw Objects
 		self.draw_bg()
 		paddle.draw_paddle(self.display)
@@ -50,11 +53,18 @@ class PongGameEnv(object):
 					pygame.quit()
 					sys.exit()
 			# Handle Object Movements
-			keys=pygame.key.get_pressed()
-			if keys[K_LEFT]:
-				paddle.move_left()
-			if keys[K_RIGHT]:
-				paddle.move_right()
+			if game_mode == 1:
+				move = ai_player.generate_move(ball, paddle)
+				if move == 1:
+					paddle.move_left()
+				elif move == 2:
+					paddle.move_right()
+			elif game_mode == 2:
+				keys=pygame.key.get_pressed()
+				if keys[K_LEFT]:
+					paddle.move_left()
+				if keys[K_RIGHT]:
+					paddle.move_right()
 			bricks = ball.move_ball(paddle, bricks)
 			# Redraw
 			self.draw_bg()
@@ -157,8 +167,8 @@ class Brick(object):
 		brick = pygame.Rect(self.xpos, self.ypos, self.width, self.height)
 		brick_fill = pygame.Rect(self.xpos + 1, self.ypos + 1,
 						self.width - 1, self.height - 1)
-		pygame.draw.rect(display, self.colors.blue, brick)
-		pygame.draw.rect(display, self.colors.black, brick_fill)
+		pygame.draw.rect(display, self.colors.black, brick)
+		pygame.draw.rect(display, self.colors.brown, brick_fill)
 		self.brick = brick
 
 class Colors(object):
@@ -168,7 +178,7 @@ class Colors(object):
 		self.white = (255, 255, 255)
 		self.maroon = (150, 0, 0)
 		self.blue = (85, 155, 215)
-
+		self.brown= (210, 105, 30)
 
 if __name__=='__main__':
     executable()
