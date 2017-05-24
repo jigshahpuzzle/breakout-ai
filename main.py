@@ -40,7 +40,7 @@ class PongGameEnv(object):
 		bricks = []
 		brick_width = self.width / 10
 		brick_height = self.height / 25
-		for x in range(20):
+		for x in range(10):
 			for y in range(5):
 				brick_x = x * (self.width / 10)
 				brick_y = y * (self.height / 25) + 20
@@ -62,7 +62,7 @@ class PongGameEnv(object):
 					sys.exit()
 			# Handle Object Movements
 			if game_mode == 1:
-				move = ai_player.generate_move(ball, paddle)
+				move = ai_player.generate_move(ball, paddle, bricks)
 				if move == 1:
 					paddle.move_left()
 				elif move == 2:

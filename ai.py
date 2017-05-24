@@ -34,8 +34,20 @@ class AIPlayer(object):
         X = np.array(df.drop(["target"], axis=1))
         self.random_forest.fit(X, y)
 
-    def generate_move(self, ball, paddle):
-        input_matrix = [[paddle.xpos, ball.xpos, ball.ypos]]
+    def generate_move(self, ball, paddle, bricks):
+        brick_bucket = [[], [], [], [], []]
+        for brick in bricks:
+            brick_bucket[brick.xpos // 80].append(brick)
+        b1_len = len(brick_bucket[0])
+        b2_len = len(brick_bucket[1])
+        b3_len = len(brick_bucket[2])
+        b4_len = len(brick_bucket[3])
+        b5_len = len(brick_bucket[4])
+        input_matrix = [[paddle.xpos,
+                            ball.xpos,
+                            ball.ypos,
+                            b1_len, b2_len, b3_len,
+                            b4_len, b5_len]]
         input_matrix = np.array(input_matrix)
         return self.random_forest.predict(input_matrix)
 
@@ -57,14 +69,22 @@ class TrainingData(object):
 					"br_5",
 					"target"]]
         for x in range(1000):
+            # Generate Randomized Inputs
             paddle_x = np.random.randint(0, 400)
             ball_x = np.random.randint(0, 400)
             ball_y = np.random.randint(30, 400)
-            br_1 = np.random.randint(0, 5)
-            br_2 = np.random.randint(0, 5)
-            br_3 = np.random.randint(0, 5)
-            br_4 = np.random.randint(0, 5)
-            br_5 = np.random.randint(0, 5)
+            br_1 = np.random.randint(0, 10)
+            br_2 = np.random.randint(0, 10)
+            br_3 = np.random.randint(0, 10)
+            br_4 = np.random.randint(0, 10)
+            br_5 = np.random.randint(0, 10)
+            # Find Goal Position
+            brs = [br_1, br_2, br_3, br_4, br_5]
+            max_value = max(brs)
+            max_index = brs.index(max_value)
+            x_targets = [40, 120, 200, 280, 360]
+            x_target = x_targets[max_index]
+            # Set Target
             target = 0
             if paddle_x > ball_x:
                 target = 1
@@ -119,7 +139,7 @@ class Classifiers(object):
 	def neuralNetwork(self):
 		print "***** Testing Neural Net *****"
 		clf =  MLPClassifier(solver='lbfgs',
-					alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
+					alpha=1e-5, hidden_layer_sizes=(10, 4, 2), random_state=1)
 		scores = cross_val_score(clf, self.X_selected, self.y, cv=5)
 		print scores, scores.mean()
 
