@@ -27,15 +27,17 @@ moves to the game
 class AIPlayer(object):
 
     def __init__(self):
-        self.random_forest = RandomForestClassifier(n_estimators=est,
+        self.random_forest = RandomForestClassifier(n_estimators=20,
 								max_depth=None, min_samples_split=2, random_state=0)
         df = pd.read_csv("data/training.csv")
         y = np.array(df["target"])
         X = np.array(df.drop(["target"], axis=1))
-		self.random_forest.fit(X, y)
+        self.random_forest.fit(X, y)
 
     def generate_move(self, ball, paddle):
-        return self.random_forest.predict()
+        input_matrix = [[paddle.xpos, ball.xpos, ball.ypos]]
+        input_matrix = np.array(input_matrix)
+        return self.random_forest.predict(input_matrix)
 
 '''
 Class responsible for generating the training data
