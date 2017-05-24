@@ -83,6 +83,8 @@ class Ball(object):
 		pygame.draw.rect(display, self.colors.white, ball)
 
 	def move_ball(self, paddle, bricks):
+		prev_x = self.xpos
+		prev_y = self.ypos
 		self.xpos = self.xpos + self.v_x
 		self.ypos = self.ypos + self.v_y
 		# Handle Edge Collisions
@@ -104,15 +106,16 @@ class Ball(object):
 		brick_height = self.game_height / 25
 		for brick in bricks:
 			curr = brick.brick
-			print curr.top, curr.bottom
-			if self.xpos <= curr.right and self.xpos >= curr.left:
+			if prev_x <= curr.right and prev_x >= curr.left:
 				if self.ypos >= curr.top and self.ypos <= curr.bottom:
 					self.v_y *= -1
 				else:
 					updated_bricks.append(brick)
-			# Right Collision
-			# Left Collision
-			# No Collision
+			elif prev_y >= curr.top and prev_y <= curr.bottom:
+				if self.xpos >= curr.left and self.xpos <= curr.right:
+					self.v_x *= -1
+				else:
+					updated_bricks.append(brick)
 			else:
 				updated_bricks.append(brick)
 		return updated_bricks
