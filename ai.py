@@ -49,17 +49,34 @@ class TrainingData(object):
         pass
 
     def generate_data(self):
-        data = [["paddle_x", "ball_x", "ball_y", "target"]]
+        data = [["paddle_x",
+					"ball_x",
+					"ball_y",
+					"br_1", "br_2",
+					"br_3", "br_4",
+					"br_5",
+					"target"]]
         for x in range(1000):
             paddle_x = np.random.randint(0, 400)
             ball_x = np.random.randint(0, 400)
             ball_y = np.random.randint(30, 400)
+            br_1 = np.random.randint(0, 5)
+            br_2 = np.random.randint(0, 5)
+            br_3 = np.random.randint(0, 5)
+            br_4 = np.random.randint(0, 5)
+            br_5 = np.random.randint(0, 5)
             target = 0
             if paddle_x > ball_x:
                 target = 1
             elif paddle_x < ball_x:
                 target = 2
-            data.append([paddle_x, ball_x, ball_y, target])
+            data.append([paddle_x,
+							ball_x,
+							ball_y,
+							br_1, br_2,
+							br_3, br_4,
+							br_5,
+							target])
         with open('data/training.csv', 'wb') as csvfile:
             spamwriter = csv.writer(csvfile)
             for row in data:

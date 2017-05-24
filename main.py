@@ -1,6 +1,7 @@
 import pygame, sys
 from pygame.locals import *
 from ai import AIPlayer
+from math import *
 
 '''
 Run in main method
@@ -8,7 +9,7 @@ Run in main method
 def executable():
 	width = 400
 	height = 400
-	fps = 60
+	fps = 80
 	env = PongGameEnv(width, height, fps)
 	env.run_game(1)
 
@@ -109,19 +110,25 @@ class Ball(object):
 		self.xpos = self.xpos + self.v_x
 		self.ypos = self.ypos + self.v_y
 		# Handle Edge Collisions
-		if self.xpos >= self.game_width or self.xpos <= 0:
+		if self.xpos >= self.game_width - 2 or self.xpos <= 2:
 			self.v_x *= -1
 		# Handle Top Collision
-		if self.ypos <= 0:
+		if self.ypos <= 2:
 			self.v_y *= -1
 		# Handle Bottom Collision
-		if self.ypos >= self.game_height:
+		if self.ypos >= self.game_height - 1:
 			self.alive = False
 		# Handle Paddle Collision
 		pad = paddle.paddle
 		if self.ypos >= pad.top - 2:
 			if self.xpos >= pad.left and self.xpos <= pad.right:
-				self.v_y *= -1
+				collision_pos = self.xpos - ((pad.left + pad.right) / 2)
+				orientation = collision_pos * 2
+				or_angle = 90 - orientation
+				v_mag = sqrt((self.v_x ** 2) + (self.v_y ** 2))
+				self.v_y = -1 * v_mag * sin(radians(or_angle))
+				self.v_x = v_mag * cos(radians(or_angle))
+				self.ypos -= 1
 		# Handle Brick Collision
 		updated_bricks = []
 		brick_height = self.game_height / 25
