@@ -2,6 +2,9 @@ import pygame, sys
 from pygame.locals import *
 from ai import AIPlayer
 
+'''
+Run in main method
+'''
 def executable():
 	width = 400
 	height = 400
@@ -9,6 +12,10 @@ def executable():
 	env = PongGameEnv(width, height, fps)
 	env.run_game(1)
 
+'''
+Generates game background and executes the main
+game loop
+'''
 class PongGameEnv(object):
 
 	def __init__(self, width, height, fps):
@@ -76,6 +83,10 @@ class PongGameEnv(object):
 			pygame.display.update()
 			self.clock.tick(self.fps)
 
+'''
+Controls logic for generating the ball and handling
+collisions with paddle, bricks, and wall
+'''
 class Ball(object):
 
 	def __init__(self, game_width, game_height):
@@ -130,7 +141,10 @@ class Ball(object):
 				updated_bricks.append(brick)
 		return updated_bricks
 
-
+'''
+Generates the paddle and provides interfaces for
+humans and the AI to move it.
+'''
 class Paddle(object):
 
 	def __init__(self, game_width, game_height):
@@ -154,6 +168,9 @@ class Paddle(object):
 		if self.xpos < self.game_width - 5 - self.width:
 			self.xpos += 2
 
+'''
+Generates the bricks for the game
+'''
 class Brick(object):
 
 	def __init__(self, game_width, game_height, xpos, ypos):
@@ -171,6 +188,9 @@ class Brick(object):
 		pygame.draw.rect(display, self.colors.brown, brick_fill)
 		self.brick = brick
 
+'''
+Color shades used by the game
+'''
 class Colors(object):
 
 	def __init__(self):
