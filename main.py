@@ -11,7 +11,9 @@ def executable():
 	height = 400
 	fps = 80
 	env = PongGameEnv(width, height, fps)
-	env.run_game(0)
+	if len(sys.argv) < 2:
+		print "ERROR: Pass in game mode (0, 1, 2) to main method"
+	env.run_game(int(sys.argv[1]))
 
 '''
 Generates game background and executes the main
@@ -35,6 +37,7 @@ class PongGameEnv(object):
 		self.clock = pygame.time.Clock()
 		# Initialize Objects
 		self.display = pygame.display.set_mode((self.width, self.height))
+		pygame.display.set_caption("Breakout Game")
 		paddle = Paddle(self.width, self.height)
 		ball = Ball(self.width, self.height)
 		bricks = []

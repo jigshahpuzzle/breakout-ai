@@ -79,7 +79,7 @@ class TrainingData(object):
 					"br_1", "br_2","br_3",
                     "br_4", "br_5",
 					"target"]]
-        for x in range(5000):
+        for x in range(10000):
             # Generate Randomized Inputs
             paddle_x = np.random.randint(0, 400)
             ball_x = np.random.randint(0, 400)
@@ -131,7 +131,7 @@ class TrainingData(object):
         x_target = x_targets[max_index]
         diff = x_target - ball_goal
         offset = diff / 400
-        paddle_goal = ball_goal - 25 + offset*20
+        paddle_goal = ball_goal - 25 - offset*21
         # Set Prediction Target
         target = 0
         if paddle_x > paddle_goal:
