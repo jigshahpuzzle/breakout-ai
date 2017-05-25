@@ -11,7 +11,7 @@ def executable():
 	height = 400
 	fps = 80
 	env = PongGameEnv(width, height, fps)
-	env.run_game(1)
+	env.run_game(0)
 
 '''
 Generates game background and executes the main
@@ -28,7 +28,7 @@ class PongGameEnv(object):
 	def draw_bg(self):
 		self.display.fill(self.colors.maroon)
 
-	# game_mode 1 = ai, game_mode 2 = human
+	# game_mode: 0 = decision, 1 = ML, 2 = human
 	def run_game(self, game_mode):
 		# Initialize Basic State
 		pygame.init()
@@ -61,8 +61,9 @@ class PongGameEnv(object):
 					pygame.quit()
 					sys.exit()
 			# Handle Object Movements
-			if game_mode == 1:
-				move = ai_player.generate_move(ball, paddle, bricks)
+			if game_mode < 2:
+				move = ai_player.generate_move(ball,
+							paddle, bricks, game_mode)
 				if move == 1:
 					paddle.move_left()
 				elif move == 2:
