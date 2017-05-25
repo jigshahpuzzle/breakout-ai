@@ -119,8 +119,8 @@ class TrainingData(object):
             ball_goal = ball_x
         else:
             time = (ball_y - 370) / ball_vy
-            ball_goal = time * ball_vx
-            if ball_goal < 0 or ball_goal > 400:
+            ball_goal = ball_x + time * ball_vx * -1
+            if ball_goal <= 0 or ball_goal >= 400:
                 ball_goal = ball_x
         # Find Paddle Goal
         paddle_goal = 0 # Destination for the paddle
@@ -129,11 +129,14 @@ class TrainingData(object):
         max_index = brs.index(max_value)
         x_targets = [40, 120, 200, 280, 360]
         x_target = x_targets[max_index]
+        diff = x_target - ball_goal
+        offset = diff / 400
+        paddle_goal = ball_goal - 25 + offset*20
         # Set Prediction Target
         target = 0
-        if paddle_x > ball_goal:
+        if paddle_x > paddle_goal:
             target = 1
-        elif paddle_x < ball_goal:
+        elif paddle_x < paddle_goal:
             target = 2
         return target
 
